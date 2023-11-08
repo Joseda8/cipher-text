@@ -1,58 +1,115 @@
-import string
-from collections import Counter
-import nltk
-from nltk.corpus import reuters
-from nltk import FreqDist, bigrams
+from ngram_analyzer import NgramAnalyzer
+import pandas as pd
 
 class MonoalphabeticCipherBreaker:
-    """
-    This class represents a breaker for the Monoalphabetic Substitution Cipher system.
-    It uses frequency analysis to attempt to break the cipher and decipher the content.
-    """
+    def __init__(self, ciphered_content: str):
+        self._ciphered_content = ciphered_content
+        self._ngram_analyzer = NgramAnalyzer()
+        self._ciphered_content_ngrams = NgramAnalyzer(text=ciphered_content, text_name="ciphered")
 
-    def __init__(self, ngram_length: int):
-        self.ngram_length = ngram_length
-        self.language_ngram_freqs = self.get_language_ngram_freqs()
+    def color_text(self, text: str, color_code: str) -> str:
+        return f'\033[{color_code}m{text}\033[0m'
 
-    def get_language_ngram_freqs(self):
-        # Download the reuters corpus if not already present
-        nltk.download('reuters')
+    def break_cipher(self) -> str:
+        replacement_dict = {}
+        while True:
+            print(self._ciphered_content)
+            user_input = input("Enter the string you want to replace and the new value (e.g. 'A B'), or type 'done' to finish: ")
+            if user_input.lower() == 'done':
+                break
 
-        # Tokenize the words in the reuters corpus
-        words = reuters.words()
+            try:
+                old_string, new_string = user_input.split()
+                
+                # Apply the replacement suggestion to the ciphered content
+                temp_deciphered_content = self._ciphered_content.replace(old_string, self.color_text(new_string, '91'))
 
-        # Compute the bigram frequencies
-        ngrams = list(nltk.ngrams(words, self.ngram_length))
-        freq_dist = FreqDist(ngrams)
+                print("Deciphered text with current suggestion:")
+                print(temp_deciphered_content)
+                print()
 
-        # Normalize the frequencies to get probabilities
-        total_ngrams = sum(freq_dist.values())
-        ngram_probs = {ngram: count/total_ngrams for ngram, count in freq_dist.items()}
+                apply_suggestion = input("Do you want to apply this suggestion? (yes/no): ")
+                if apply_suggestion.lower() == 'yes':
+                    # Apply the replacement suggestion to a copy of the ciphered content
+                    temp_deciphered_content = self._ciphered_content.replace(old_string, new_string)
+                    replacement_dict[old_string] = new_string
 
-        return ngram_probs
+                    # Highlight the replaced segment in blue
+                    highlighted_content = temp_deciphered_content.replace(new_string, self.color_text(new_string, '94'))
 
-    def break_cipher(self, ciphered_content: str) -> str:
-        # Preprocess the content to remove punctuation and convert to lowercase
-        content = ciphered_content.lower()
-        content = ''.join([c for c in content if c in string.ascii_lowercase])
+                    print("Applied suggestion:")
+                    print(highlighted_content)
+                    print()
 
-        # Count the n-gram frequencies in the ciphered content
-        cipher_ngram_freqs = Counter([content[i:i+self.ngram_length] for i in range(len(content)-self.ngram_length+1)])
+                    # Update the original ciphered content with the applied changes
+                    self._ciphered_content = temp_deciphered_content
 
-        # Try to match the n-grams in the ciphered content to the n-grams in the original language
-        # This is a simple example and may not be very accurate
-        substitutions = {}
-        for ngram in cipher_ngram_freqs:
-            if ngram in self.language_ngram_freqs:
-                substitutions[ngram] = ngram
+            except ValueError:
+                print("Invalid input. Please enter the string you want to replace and the new value separated by a space.")
+                continue
 
-        # Perform the substitutions to try to decipher the content
-        deciphered_content = ''
-        for i in range(len(content)-self.ngram_length+1):
-            ngram = content[i:i+self.ngram_length]
-            if ngram in substitutions:
-                deciphered_content += substitutions[ngram]
-            else:
-                deciphered_content += ngram
+        return self._ciphered_content
 
-        return deciphered_content
+
+    def store_ngrams(self):
+        # Get the unigrams, bigrams, and trigrams from the ciphered content and the English language
+        ciphered_unigrams = self._ciphered_content_ngrams.unigrams
+        ciphered_bigrams = self._ciphered_content_ngrams.bigrams
+        ciphered_trigrams = self._ciphered_content_ngrams.trigrams
+        english_unigrams = self._ngram_analyzer.unigrams
+        english_bigrams = self._ngram_analyzer.bigrams
+        english_trigrams = self._ngram_analyzer.trigrams
+
+        # Convert the unigrams, bigrams, and trigrams into Pandas DataFrames
+        df_ciphered_unigrams = pd.DataFrame(ciphered_unigrams.items(), columns=['ngram', 'frequency'])
+        df_ciphered_bigrams = pd.DataFrame(ciphered_bigrams.items(), columns=['ngram', 'frequency'])
+        df_ciphered_trigrams = pd.DataFrame(ciphered_trigrams.items(), columns=['ngram', 'frequency'])
+        df_english_unigrams = pd.DataFrame(english_unigrams.items(), columns=['ngram', 'frequency'])
+        df_english_bigrams = pd.DataFrame(english_bigrams.items(), columns=['ngram', 'frequency'])
+        df_english_trigrams = pd.DataFrame(english_trigrams.items(), columns=['ngram', 'frequency'])
+
+        # Sort the DataFrames by the "frequency" column in descending order
+        df_ciphered_unigrams = df_ciphered_unigrams.sort_values(by='frequency', ascending=False)
+        df_ciphered_bigrams = df_ciphered_bigrams.sort_values(by='frequency', ascending=False)
+        df_ciphered_trigrams = df_ciphered_trigrams.sort_values(by='frequency', ascending=False)
+        df_english_unigrams = df_english_unigrams.sort_values(by='frequency', ascending=False)
+        df_english_bigrams = df_english_bigrams.sort_values(by='frequency', ascending=False)
+        df_english_trigrams = df_english_trigrams.sort_values(by='frequency', ascending=False)
+
+        # Reset the index of the sorted DataFrames
+        df_ciphered_unigrams = df_ciphered_unigrams.reset_index(drop=True)
+        df_ciphered_bigrams = df_ciphered_bigrams.reset_index(drop=True)
+        df_ciphered_trigrams = df_ciphered_trigrams.reset_index(drop=True)
+        df_english_unigrams = df_english_unigrams.reset_index(drop=True)
+        df_english_bigrams = df_english_bigrams.reset_index(drop=True)
+        df_english_trigrams = df_english_trigrams.reset_index(drop=True)
+
+        # Store ngrams in CSV files
+        df_ciphered_unigrams.to_csv("df_ciphered_unigrams.csv", sep=',', index=False)
+        df_ciphered_bigrams.to_csv("df_ciphered_bigrams.csv", sep=',', index=False)
+        df_ciphered_trigrams.to_csv("df_ciphered_trigrams.csv", sep=',', index=False)
+        df_english_unigrams.to_csv("df_english_unigrams.csv", sep=',', index=False)
+        df_english_bigrams.to_csv("df_english_bigrams.csv", sep=',', index=False)
+        df_english_trigrams.to_csv("df_english_trigrams.csv", sep=',', index=False)
+
+
+if __name__ == "__main__":
+    from text_util import TextUtil
+
+    # Text utilitary instance
+    util_text = TextUtil()
+
+    # Read the content of the sample file
+    sample_text = util_text.read_file(filename="mono_ciphered.txt")
+
+    # Create an instance of the MonoalphabeticCipherBreaker class
+    cipher_breaker = MonoalphabeticCipherBreaker(ciphered_content=sample_text)
+
+    # Store ngrams
+    cipher_breaker.store_ngrams()
+
+    # Break the cipher and get the deciphered content
+    deciphered_content = cipher_breaker.break_cipher()
+
+    # Print the deciphered content
+    print(deciphered_content)

@@ -3,3 +3,15 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
+
+# Ignore cache files
+*.pickle
+
+# Ignore all txt files
+*.txt
+
+# Ignore CSV files
+*.csv
+
+# Don't ignore these specific files
+!sample.txt
