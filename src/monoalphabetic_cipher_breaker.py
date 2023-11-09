@@ -1,3 +1,5 @@
+import itertools
+
 import pandas as pd
 from collections import Counter
 
@@ -35,17 +37,14 @@ class MonoalphabeticCipherBreaker:
         return decoder
 
     def _get_possible_decoders(self, ngrams_language, ngrams_ciphered):
-        possible_decoders = []
-
         ngrams_language_values = list(ngrams_language.values())
         ngrams_ciphered_values = list(ngrams_ciphered.values())
 
-        for _ in range(0, len(ngrams_ciphered_values)):
-            ngrams_language_values = ngrams_language_values[1:] + ngrams_language_values[:1]
-            decoder = self._get_decoder(ngrams_language_values, ngrams_ciphered_values)
-            possible_decoders.append(decoder)
+        # Generate all permutations of ngrams_language_values
+        perms = list(itertools.permutations(ngrams_language_values))
 
-        possible_decoders.reverse()
+        # Generate all possible combinations by pairing each permutation with ngrams_ciphered_values
+        possible_decoders = [[(cipher, lang) for cipher, lang in zip(ngrams_ciphered_values, perm)] for perm in perms]
         return possible_decoders
 
     def break_cipher(self) -> str:
@@ -62,11 +61,17 @@ class MonoalphabeticCipherBreaker:
 
         for num_decoder, decoder in enumerate(decoders_trigrams):
             ciphered_content = self._ciphered_content
+            replacements = {}
             for cipher_value, lang_value in decoder:
                 cipher_value_letters = list(cipher_value)
                 lang_value_letters = list(lang_value)
+
                 for num in range(0, len(cipher_value_letters)):
-                    ciphered_content = ciphered_content.replace(cipher_value_letters[num], lang_value_letters[num])
+                    replacements[cipher_value_letters[num]] = lang_value_letters[num]
+
+            translation_table = str.maketrans(replacements)
+            ciphered_content = ciphered_content.translate(translation_table)
+            print(ciphered_content)
             self._util_text.write_text_to_file(filename=f"decoder_{num_decoder}.txt", content=ciphered_content)
         return deciphered_content
 
@@ -152,5 +157,5 @@ if __name__ == "__main__":
     deciphered_content = cipher_breaker.break_cipher()
     deciphered_content = cipher_breaker.break_cipher_manually()
 
-    # Print the deciphered content
-    print(deciphered_content)
+    # Save the deciphered content
+    util_text.write_text_to_file(filename="mono_hacked.txt", content=deciphered_content)
