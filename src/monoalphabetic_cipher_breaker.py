@@ -1,5 +1,7 @@
-from ngram_analyzer import NgramAnalyzer
 import pandas as pd
+
+from ngram_analyzer import NgramAnalyzer
+
 
 class MonoalphabeticCipherBreaker:
     def __init__(self, ciphered_content: str):

@@ -1,7 +1,7 @@
-from cache_data import cache_data
-from nltk_util import download_required_resources, calculate_ngram_freq, get_long_text
+from util.cache_data import cache_data
+from util.nltk_util import download_required_resources, calculate_ngram_freq, get_long_text
 
-# Download required resources
+# Download NLTK required resources
 download_required_resources()
 
 # NgramAnalyzer class

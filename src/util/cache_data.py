@@ -4,7 +4,7 @@ import threading
 
 from typing import Callable
 
-from logger import setup_logging
+from util.logger import setup_logging
 
 # Set up the logging configuration
 logger = setup_logging()

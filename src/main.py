@@ -2,9 +2,8 @@ import argparse
 
 from monoalphabetic_cipher import MonoalphabeticCipher
 from monoalphabetic_cipher_breaker import MonoalphabeticCipherBreaker
-from text_util import TextUtil
-
-from logger import setup_logging
+from util.logger import setup_logging
+from util.text_util import TextUtil
 
 
 # Set up the logging configuration
