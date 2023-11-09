@@ -3,6 +3,7 @@ import pandas as pd
 from collections import Counter
 
 from ngram_analyzer import NgramAnalyzer
+from util.nltk_util import Language
 from util.text_util import TextUtil
 
 
@@ -12,7 +13,7 @@ class MonoalphabeticCipherBreaker:
     It provides methods to break the cipher using n-gram frequency analysis.
     """
     
-    def __init__(self, ciphered_content: str) -> None:
+    def __init__(self, ciphered_content: str, language: Language) -> None:
         """
         Constructor method that initializes the class with the ciphered content.
         
@@ -21,7 +22,7 @@ class MonoalphabeticCipherBreaker:
         # Initialize instance variables
         self._ciphered_content = ciphered_content
         self._ciphered_content_ngrams = NgramAnalyzer(text=ciphered_content, text_name="ciphered")
-        self._language_ngrams = NgramAnalyzer()
+        self._language_ngrams = NgramAnalyzer(language=language)
 
         # Text utility instance
         self._util_text = TextUtil()
@@ -170,7 +171,12 @@ class MonoalphabeticCipherBreaker:
                 old_string, new_string = user_input.split()
 
                 # Apply the replacement suggestion to the ciphered content
-                temp_deciphered_content = ciphered_content.replace(old_string, self.color_text(new_string, '91'))
+                old_string_letters = list(old_string)
+                new_string_letters = list(new_string)
+
+                temp_deciphered_content = ciphered_content
+                for num in range(0, len(old_string_letters)):
+                    temp_deciphered_content = temp_deciphered_content.replace(old_string_letters[num], self.color_text(new_string_letters[num], '91'))
 
                 # Print the deciphered text with the current suggestion
                 print("\nDeciphered text with current suggestion:")
@@ -181,20 +187,20 @@ class MonoalphabeticCipherBreaker:
                 apply_suggestion = input("\nDo you want to apply this suggestion? (yes/no): ")
                 if apply_suggestion.lower() == 'yes':
                     # Apply the replacement suggestion to a copy of the ciphered content
-                    temp_deciphered_content = ciphered_content.replace(old_string, new_string)
+                    replacements = {}
+                    old_string_letters = list(old_string)
+                    new_string_letters = list(new_string)
+                    for num in range(0, len(old_string_letters)):
+                        replacements[old_string_letters[num]] = new_string_letters[num]
+
+                    # Apply the replacements to the ciphered content
+                    translation_table = str.maketrans(replacements)
+                    temp_deciphered_content = ciphered_content.translate(translation_table)
 
                     # Update the replacement dictionary
                     for i, old_char in enumerate(old_string):
                         if i < len(new_string):
                             replacement_dict[old_char] = new_string[i]
-
-                    # Highlight the replaced segment in blue
-                    highlighted_content = temp_deciphered_content.replace(new_string, self.color_text(new_string, '94'))
-
-                    # Print the applied suggestion
-                    print("\nApplied suggestion:")
-                    print(highlighted_content)
-                    print()
 
                     # Update the original ciphered content with the applied changes
                     ciphered_content = temp_deciphered_content
@@ -238,6 +244,11 @@ class MonoalphabeticCipherBreaker:
         self._df_language_bigrams.to_csv("df_language_bigrams.csv", sep=',', index=False)
         self._df_language_trigrams.to_csv("df_language_trigrams.csv", sep=',', index=False)
 
+def language_type(value):
+    try:
+        return Language[value]
+    except KeyError:
+        raise argparse.ArgumentTypeError(f"Invalid Language value: {value}")
 
 if __name__ == "__main__":
     import argparse
@@ -250,13 +261,14 @@ if __name__ == "__main__":
     parser.add_argument("--filename", help="Path to the file containing the ciphered text.", required=True)
     parser.add_argument("--hack_by_file", help="Path to the JSON file containing the replacements.")
     parser.add_argument("--current_decoding_file", help="Path to file with current decoding.")
+    parser.add_argument("--language", help="Language for the text (eng or spa).", required=True, type=language_type, choices=list(Language))
     args = parser.parse_args()
 
     # Read the content of the file specified by the command line argument
     ciphered_text = util_text.read_file(filename=args.filename)
 
     # Create an instance of the MonoalphabeticCipherBreaker class
-    cipher_breaker = MonoalphabeticCipherBreaker(ciphered_content=ciphered_text)
+    cipher_breaker = MonoalphabeticCipherBreaker(ciphered_content=ciphered_text, language=args.language)
 
     # Store n-grams
     cipher_breaker.store_ngrams()

@@ -1,10 +1,14 @@
-# nltk_util.py
-
 import nltk
 from nltk.corpus import gutenberg
 
 from collections import Counter
+from enum import Enum
 import re
+
+
+class Language(Enum):
+    eng = 1
+    spa = 2
 
 # Function to download a resource if not available
 def download_resource(resource):
@@ -36,7 +40,12 @@ def ngrams(n, text):
         if not re.search(r'\s', text[i:i+n]):
             yield text[i:i+n]
 
-# Function to get a long text in English
-def get_long_text():
-    long_text = gutenberg.raw('bryant-stories.txt') + gutenberg.raw('austen-persuasion.txt') + gutenberg.raw('melville-moby_dick.txt')
+# Function to get a long text in a specified language
+def get_long_text(language):
+    if language == Language.eng:
+        long_text = gutenberg.raw('bryant-stories.txt') + gutenberg.raw('austen-persuasion.txt') + gutenberg.raw('melville-moby_dick.txt')
+    elif language == Language.spa:
+        long_text = gutenberg.raw('don_quijote.txt') + gutenberg.raw('cosas_nuevas.txt')
+    else:
+        raise ValueError("Invalid language specified")
     return long_text

@@ -13,5 +13,9 @@ __pycache__/
 # Ignore CSV files
 *.csv
 
+# Ignore JSON files
+*.json
+
 # Don't ignore these specific files
+!muestra.txt
 !sample.txt

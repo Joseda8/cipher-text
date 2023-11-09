@@ -1,15 +1,15 @@
 from util.cache_data import cache_data
-from util.nltk_util import download_required_resources, calculate_ngram_freq, get_long_text
+from util.nltk_util import download_required_resources, calculate_ngram_freq, get_long_text, Language
 
 # Download NLTK required resources
 download_required_resources()
 
 # NgramAnalyzer class
 class NgramAnalyzer:
-    def __init__(self, text_name="default", text=None, cache=True):
+    def __init__(self, text_name="default", language=Language.eng, text=None, cache=True):
 
         if text is None:
-            text = get_long_text()
+            text = get_long_text(language=language)
 
         # Generate bigrams, trigrams, and single letters
         self.unigrams = cache_data(calculate_ngram_freq, f"{text_name}_unigram_freq", cache, text, "unigrams")
