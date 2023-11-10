@@ -1,6 +1,7 @@
 import argparse
 
 from src.ciphers.monoalphabetic_cipher import MonoalphabeticCipher
+from src.ciphers.polyalphabetic_cipher import PolyalphabeticCipher
 from src.util.logger import setup_logging
 from src.util.nltk_util import Language, language_type
 from src.util.text_util import TextUtil
@@ -38,9 +39,22 @@ monoalphabetic_cipher = MonoalphabeticCipher()
 
 # Cipher, decipher and hack the text
 logger.debug("Running Monoalphabetic cipher - Ciphering")
-ciphered_content = monoalphabetic_cipher.cipher_content(content=sample_text)
-util_text.write_text_to_file(filename=f"results/{language}/mono_ciphered.txt", content=ciphered_content)
+ciphered_content_mono = monoalphabetic_cipher.cipher_content(content=sample_text)
+util_text.write_text_to_file(filename=f"results/{language}/mono_ciphered.txt", content=ciphered_content_mono)
 
 logger.debug("Running Monoalphabetic cipher - Deciphering")
-deciphered_content = monoalphabetic_cipher.decipher_content(ciphered_content=ciphered_content)
-util_text.write_text_to_file(filename=f"results/{language}/mono_deciphered.txt", content=deciphered_content)
+deciphered_content_mono = monoalphabetic_cipher.decipher_content(ciphered_content=ciphered_content_mono)
+util_text.write_text_to_file(filename=f"results/{language}/mono_deciphered.txt", content=deciphered_content_mono)
+
+# Instance of the MonoalphabeticCipher class
+logger.info("Running PolyalphabeticCipher cipher")
+polyalphabetic_cipher = PolyalphabeticCipher()
+
+# Cipher, decipher and hack the text
+logger.debug("Running PolyalphabeticCipher cipher - Ciphering")
+ciphered_content_poly = polyalphabetic_cipher.cipher_content(content=sample_text)
+util_text.write_text_to_file(filename=f"results/{language}/poly_ciphered.txt", content=ciphered_content_poly)
+
+logger.debug("Running PolyalphabeticCipher cipher - Deciphering")
+deciphered_content_poly = polyalphabetic_cipher.decipher_content(ciphered_content=ciphered_content_poly)
+util_text.write_text_to_file(filename=f"results/{language}/poly_deciphered.txt", content=deciphered_content_poly)

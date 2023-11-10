@@ -248,6 +248,7 @@ class MonoalphabeticCipherBreaker:
 
         return ciphered_content
 
+
 if __name__ == "__main__":
     import argparse
 
@@ -285,8 +286,7 @@ if __name__ == "__main__":
             current_decoding_file = args.current_decoding_file
         else:
             # Ask the user for the path of the content to send to break_cipher_manually
-            current_decoding_file = input(
-                "Enter the path of the file to use for manual decryption, or press Enter to start from scratch: ")
+            current_decoding_file = input("Enter the path of the file to use for manual decryption, or press Enter to start from scratch: ")
 
         # Use the user input as the argument to break_cipher_manually if it is not empty, otherwise use ciphered_text
         if current_decoding_file:

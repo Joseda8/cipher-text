@@ -4,7 +4,7 @@ from src.util.nltk_util import download_required_resources, calculate_ngram_freq
 # Download NLTK required resources
 download_required_resources()
 
-# NgramAnalyzer class
+
 class NgramAnalyzer:
     """
     This class represents an Ngram Analyzer that generates unigrams, bigrams, and trigrams frequency distributions.

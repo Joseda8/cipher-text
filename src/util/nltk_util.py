@@ -23,7 +23,6 @@ def language_type(value):
     except KeyError:
         raise ValueError(f"Invalid Language value: {value}")
 
-# Function to download a resource if not available
 def download_resource(resource):
     """
     Downloads the specified NLTK resource if not already available.
@@ -35,14 +34,12 @@ def download_resource(resource):
     except LookupError:
         nltk.download(resource)
 
-# Download required resources
 def download_required_resources():
     """
     Downloads the required NLTK resources for the script.
     """
     download_resource('gutenberg')
 
-# Function to calculate n-gram frequencies using the new ngrams function
 def calculate_ngram_freq(text, ngram_type):
     """
     Calculates the frequency distribution of n-grams in the given text.
@@ -62,7 +59,6 @@ def calculate_ngram_freq(text, ngram_type):
     freq_dist = Counter(ngrams_list)
     return freq_dist
 
-# Function to generate n-grams from text
 def ngrams(n, text):
     """
     Generates n-grams from the given text.
@@ -75,7 +71,6 @@ def ngrams(n, text):
         if not re.search(r'\s', text[i:i+n]):
             yield text[i:i+n]
 
-# Function to get a long text in a specified language
 def get_long_text(language):
     """
     Retrieves a long text in the specified language.
