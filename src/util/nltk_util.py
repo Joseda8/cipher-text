@@ -1,9 +1,9 @@
-import nltk
-from nltk.corpus import gutenberg
-
+import re
 from collections import Counter
 from enum import Enum
-import re
+
+import nltk
+from nltk.corpus import gutenberg
 
 
 class Language(Enum):
@@ -11,13 +11,25 @@ class Language(Enum):
     spa = 2
 
 def language_type(value):
+    """
+    Converts a string into a Language enum member.
+
+    :param value: The string representation of the Language enum.
+    :return: The corresponding Language enum member.
+    :raises: KeyError if an invalid Language value is provided.
+    """
     try:
         return Language[value]
     except KeyError:
-        raise f"Invalid Language value: {value}"
+        raise ValueError(f"Invalid Language value: {value}")
 
 # Function to download a resource if not available
 def download_resource(resource):
+    """
+    Downloads the specified NLTK resource if not already available.
+
+    :param resource: The name of the NLTK resource.
+    """
     try:
         nltk.data.find(resource_name=resource, paths='~/nltk_data')
     except LookupError:
@@ -25,15 +37,25 @@ def download_resource(resource):
 
 # Download required resources
 def download_required_resources():
+    """
+    Downloads the required NLTK resources for the script.
+    """
     download_resource('gutenberg')
 
 # Function to calculate n-gram frequencies using the new ngrams function
-def calculate_ngram_freq(text, type):
-    if type == "unigrams":
+def calculate_ngram_freq(text, ngram_type):
+    """
+    Calculates the frequency distribution of n-grams in the given text.
+
+    :param text: The input text.
+    :param ngram_type: The type of n-gram ("unigrams", "bigrams", or "trigrams").
+    :return: A Counter object representing the frequency distribution of n-grams.
+    """
+    if ngram_type == "unigrams":
         ngrams_list = [letter.lower() for letter in text]
-    elif type == "bigrams":
+    elif ngram_type == "bigrams":
         ngrams_list = list(ngrams(2, text))
-    elif type == "trigrams":
+    elif ngram_type == "trigrams":
         ngrams_list = list(ngrams(3, text))
 
     # Calculate the frequency distribution using the Counter class
@@ -42,12 +64,26 @@ def calculate_ngram_freq(text, type):
 
 # Function to generate n-grams from text
 def ngrams(n, text):
+    """
+    Generates n-grams from the given text.
+
+    :param n: The size of the n-grams.
+    :param text: The input text.
+    :yield: The generated n-grams.
+    """
     for i in range(len(text) - n + 1):
         if not re.search(r'\s', text[i:i+n]):
             yield text[i:i+n]
 
 # Function to get a long text in a specified language
 def get_long_text(language):
+    """
+    Retrieves a long text in the specified language.
+
+    :param language: The target language (Language enum).
+    :return: The concatenated long text.
+    :raises: ValueError if an invalid language is specified.
+    """
     if language == Language.eng:
         long_text = gutenberg.raw('bryant-stories.txt') + gutenberg.raw('austen-persuasion.txt') + gutenberg.raw('melville-moby_dick.txt')
     elif language == Language.spa:
