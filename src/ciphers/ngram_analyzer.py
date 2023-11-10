@@ -1,5 +1,5 @@
-from util.cache_data import cache_data
-from util.nltk_util import download_required_resources, calculate_ngram_freq, get_long_text, Language
+from src.util.cache_data import cache_data
+from src.util.nltk_util import download_required_resources, calculate_ngram_freq, get_long_text, Language
 
 # Download NLTK required resources
 download_required_resources()

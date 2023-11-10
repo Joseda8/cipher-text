@@ -1,9 +1,9 @@
 import argparse
 
-from monoalphabetic_cipher import MonoalphabeticCipher
-from util.logger import setup_logging
-from util.nltk_util import Language, language_type
-from util.text_util import TextUtil
+from src.ciphers.monoalphabetic_cipher import MonoalphabeticCipher
+from src.util.logger import setup_logging
+from src.util.nltk_util import Language, language_type
+from src.util.text_util import TextUtil
 
 
 # Set up the logging configuration

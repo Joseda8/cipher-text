@@ -2,9 +2,9 @@ import itertools
 import pandas as pd
 from collections import Counter
 
-from ngram_analyzer import NgramAnalyzer
-from util.nltk_util import Language, language_type
-from util.text_util import TextUtil
+from src.ciphers.ngram_analyzer import NgramAnalyzer
+from src.util.nltk_util import Language, language_type
+from src.util.text_util import TextUtil
 
 
 class MonoalphabeticCipherBreaker:
