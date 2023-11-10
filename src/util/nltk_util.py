@@ -10,6 +10,12 @@ class Language(Enum):
     eng = 1
     spa = 2
 
+def language_type(value):
+    try:
+        return Language[value]
+    except KeyError:
+        raise f"Invalid Language value: {value}"
+
 # Function to download a resource if not available
 def download_resource(resource):
     try:

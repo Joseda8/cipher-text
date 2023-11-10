@@ -3,7 +3,7 @@ import pandas as pd
 from collections import Counter
 
 from ngram_analyzer import NgramAnalyzer
-from util.nltk_util import Language
+from util.nltk_util import Language, language_type
 from util.text_util import TextUtil
 
 
@@ -12,17 +12,19 @@ class MonoalphabeticCipherBreaker:
     This class represents a Monoalphabetic Substitution Cipher breaker.
     It provides methods to break the cipher using n-gram frequency analysis.
     """
-    
+
     def __init__(self, ciphered_content: str, language: Language) -> None:
         """
         Constructor method that initializes the class with the ciphered content.
-        
+
         :param ciphered_content: the ciphered content as a string
         """
         # Initialize instance variables
         self._ciphered_content = ciphered_content
-        self._ciphered_content_ngrams = NgramAnalyzer(text=ciphered_content, text_name="ciphered")
-        self._language_ngrams = NgramAnalyzer(language=language)
+        self._language = language
+        self._language_name = language.name
+        self._ciphered_content_ngrams = NgramAnalyzer(text=ciphered_content, text_name=f"{self._language_name}_ciphered")
+        self._language_ngrams = NgramAnalyzer(language=language, text_name=self._language_name)
 
         # Text utility instance
         self._util_text = TextUtil()
@@ -34,6 +36,37 @@ class MonoalphabeticCipherBreaker:
         self._df_language_unigrams = self._ngram_to_dataframe(ngram=self._language_ngrams.unigrams)
         self._df_language_bigrams = self._ngram_to_dataframe(ngram=self._language_ngrams.bigrams)
         self._df_language_trigrams = self._ngram_to_dataframe(ngram=self._language_ngrams.trigrams)
+
+    def _ngram_to_dataframe(self, ngram: Counter) -> pd.DataFrame:
+        """
+        Converts the given n-gram Counter object to a Pandas DataFrame.
+
+        :param ngram: the n-gram Counter object
+        :return: the n-gram DataFrame
+        """
+        # Convert the n-gram Counter object to a DataFrame
+        df_ngram = pd.DataFrame(ngram.items(), columns=['ngram', 'frequency'])
+
+        # Sort the DataFrame by frequency in descending order
+        df_ngram = df_ngram.sort_values(by='frequency', ascending=False)
+
+        # Reset the index of the sorted DataFrame
+        df_ngram = df_ngram.reset_index(drop=True)
+
+        return df_ngram
+
+    def store_ngrams(self) -> None:
+        """
+        Stores the n-grams data to CSV files.
+        """
+        # Store the n-grams DataFrames to CSV files
+        path_root = f"results/{self._language_name}/ngrams"
+        self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_ciphered_unigrams.csv", dataframe=self._df_ciphered_unigrams)
+        self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_ciphered_biigrams.csv", dataframe=self._df_ciphered_bigrams)
+        self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_ciphered_trigrams.csv", dataframe=self._df_ciphered_trigrams)
+        self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_language_unigrams.csv", dataframe=self._df_language_unigrams)
+        self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_language_biigrams.csv", dataframe=self._df_language_bigrams)
+        self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_language_trigrams.csv", dataframe=self._df_language_trigrams)
 
     def _get_most_frequent_chars(self, df_ngrams, num_top) -> dict:
         """
@@ -77,18 +110,22 @@ class MonoalphabeticCipherBreaker:
         # Pair each permutation with the ciphered n-grams
         possible_decoders = [[(cipher, lang) for cipher, lang in zip(ngrams_ciphered_values, perm)] for perm in perms]
         return possible_decoders
-    
+
     def perform_replacement(self, replacements):
+        """
+        Apply replacements to the ciphered content.
+
+        :param replacements: the replacement dictionary
+        :return: the deciphered content
+        """
         # Apply the replacements to the ciphered content
         translation_table = str.maketrans(replacements)
         ciphered_content = self._ciphered_content.translate(translation_table)
         return ciphered_content
 
-    def break_cipher(self) -> str:
+    def break_cipher(self) -> None:
         """
-        Breaks the cipher and returns the deciphered content.
-
-        :return: the deciphered content as a string
+        Breaks the cipher and saves deciphered content to files.
         """
         # Get the most frequent trigrams, bigrams, and unigrams from the language and ciphered content
         top_trigrams_language = self._get_most_frequent_chars(df_ngrams=self._df_language_trigrams, num_top=3)
@@ -116,7 +153,7 @@ class MonoalphabeticCipherBreaker:
             # Check if all the words in top_trigrams_language appear in ciphered_content
             if all(word in ciphered_content for word in top_trigrams_language.values()):
                 # Save the result
-                self._util_text.write_text_to_file(filename=f"decoder_{num_decoder}.txt", content=ciphered_content)
+                self._util_text.write_text_to_file(filename=f"results/{self._language_name}/possible_decoders/decoder_{num_decoder}.txt", content=ciphered_content)
 
     def color_text(self, text: str, color_code: str) -> str:
         """
@@ -128,7 +165,6 @@ class MonoalphabeticCipherBreaker:
         """
         return f'\033[{color_code}m{text}\033[0m'
 
-
     def break_cipher_manually(self, ciphered_content: str = None) -> str:
         """
         Breaks the cipher manually by allowing the user to provide replacement suggestions.
@@ -139,10 +175,10 @@ class MonoalphabeticCipherBreaker:
         # Use the attribute value if ciphered_content is not provided
         if ciphered_content is None:
             ciphered_content = self._ciphered_content
-        
+
         # Initialize the replacement dictionary
         replacement_dict = {}
-        
+
         # Populate the replacement dictionary with initial differences
         for i, char in enumerate(ciphered_content):
             if i < len(self._ciphered_content) and char != self._ciphered_content[i]:
@@ -156,7 +192,7 @@ class MonoalphabeticCipherBreaker:
                     highlighted_content += self.color_text(char, '94')
                 else:
                     highlighted_content += char
-                        
+
             # Print the current ciphered content with differences highlighted
             print(f"\n{highlighted_content}")
 
@@ -212,44 +248,6 @@ class MonoalphabeticCipherBreaker:
 
         return ciphered_content
 
-
-
-    def _ngram_to_dataframe(self, ngram: Counter) -> pd.DataFrame:
-        """
-        Converts the given n-gram Counter object to a Pandas DataFrame.
-
-        :param ngram: the n-gram Counter object
-        :return: the n-gram DataFrame
-        """
-        # Convert the n-gram Counter object to a DataFrame
-        df_ngram = pd.DataFrame(ngram.items(), columns=['ngram', 'frequency'])
-
-        # Sort the DataFrame by frequency in descending order
-        df_ngram = df_ngram.sort_values(by='frequency', ascending=False)
-
-        # Reset the index of the sorted DataFrame
-        df_ngram = df_ngram.reset_index(drop=True)
-
-        return df_ngram
-
-    def store_ngrams(self) -> None:
-        """
-        Stores the n-grams data to CSV files.
-        """
-        # Store the n-grams DataFrames to CSV files
-        self._df_ciphered_unigrams.to_csv("df_ciphered_unigrams.csv", sep=',', index=False)
-        self._df_ciphered_bigrams.to_csv("df_ciphered_bigrams.csv", sep=',', index=False)
-        self._df_ciphered_trigrams.to_csv("df_ciphered_trigrams.csv", sep=',', index=False)
-        self._df_language_unigrams.to_csv("df_language_unigrams.csv", sep=',', index=False)
-        self._df_language_bigrams.to_csv("df_language_bigrams.csv", sep=',', index=False)
-        self._df_language_trigrams.to_csv("df_language_trigrams.csv", sep=',', index=False)
-
-def language_type(value):
-    try:
-        return Language[value]
-    except KeyError:
-        raise argparse.ArgumentTypeError(f"Invalid Language value: {value}")
-
 if __name__ == "__main__":
     import argparse
 
@@ -287,7 +285,8 @@ if __name__ == "__main__":
             current_decoding_file = args.current_decoding_file
         else:
             # Ask the user for the path of the content to send to break_cipher_manually
-            current_decoding_file = input("Enter the path of the file to use for manual decryption, or press Enter to start from scratch: ")
+            current_decoding_file = input(
+                "Enter the path of the file to use for manual decryption, or press Enter to start from scratch: ")
 
         # Use the user input as the argument to break_cipher_manually if it is not empty, otherwise use ciphered_text
         if current_decoding_file:

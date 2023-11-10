@@ -6,7 +6,7 @@ download_required_resources()
 
 # NgramAnalyzer class
 class NgramAnalyzer:
-    def __init__(self, text_name="default", language=Language.eng, text=None, cache=True):
+    def __init__(self, text_name, language=Language.eng, text=None, cache=True):
 
         if text is None:
             text = get_long_text(language=language)
