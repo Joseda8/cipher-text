@@ -120,8 +120,6 @@ class DesCipherHelper:
         :param key_hex: The input key as a hexadecimal string
         :return: Tuple containing lists of round keys in binary and hexadecimal
         """
-        seed = DesCipherHelper._generate_seed()
-
         # Convert the hexadecimal key to binary
         key_binary = DesCipherHelper.hex_to_bin(key_hex)
 

@@ -12,7 +12,6 @@ class DES:
         """
         Constructor method that initializes the DES object with predefined tables.
         """
-
         # Instance of DesCipherHelper
         self.des_helper = DesCipherHelper()
 
