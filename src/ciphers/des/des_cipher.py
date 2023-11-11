@@ -2,7 +2,7 @@ from src.ciphers.des import const
 from src.ciphers.des.des_cipher_helper import DesCipherHelper
 
 
-class DES:
+class DesCipher:
     """
     This class represents the Data Encryption Standard (DES) algorithm.
     It provides methods for key generation, encryption, and helper functions.
@@ -127,7 +127,7 @@ class DES:
 
 
 # Main -------
-des = DES()
+des = DesCipher()
 pt = "123456ABCD132536"
 
 print("Encryption")
