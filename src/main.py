@@ -1,7 +1,6 @@
 import argparse
 
-from src.ciphers.monoalphabetic_cipher import MonoalphabeticCipher
-from src.ciphers.polyalphabetic_cipher import PolyalphabeticCipher
+from src.ciphers import MonoalphabeticCipher, PolyalphabeticCipher
 from src.util.logger import setup_logging
 from src.util.nltk_util import Language, language_type
 from src.util.text_util import TextUtil

@@ -2,7 +2,7 @@ import itertools
 import pandas as pd
 from collections import Counter
 
-from src.ciphers.ngram_analyzer import NgramAnalyzer
+from src.ciphers.monoalphabetic.ngram_analyzer import NgramAnalyzer
 from src.util.nltk_util import Language, language_type
 from src.util.text_util import TextUtil
 
