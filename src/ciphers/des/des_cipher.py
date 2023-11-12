@@ -17,7 +17,7 @@ class DesCipher:
         # Instance of DesCipherHelper
         self.des_helper = DesCipherHelper()
 
-        # Table of Position of 64 bits at initial level: Initial Permutation Table
+        # Table of Position of 64 bits at the initial level: Initial Permutation Table
         self.initial_permutation_table = const.initial_permutation_table
 
         # Expansion D-box Table
@@ -57,19 +57,18 @@ class DesCipher:
             xor_result = self.des_helper.xor(right_expanded, round_keys_binary[round_num])
 
             # S-boxes: Substituting the value from s-box table
-            sbox_result = ""
-            for sbox_index in range(8):
-                row = self.des_helper.bin_to_dec(int(xor_result[sbox_index * 6] + xor_result[sbox_index * 6 + 5]))
-                col = self.des_helper.bin_to_dec(int(xor_result[sbox_index * 6 + 1:sbox_index * 6 + 5]))
-                val = self.s_box_table[sbox_index][row][col]
-                sbox_result += self.des_helper.dec_to_bin(val)
+            sbox_result = "".join(
+                self.des_helper.dec_to_bin(self.s_box_table[i][self.des_helper.bin_to_dec(xor_result[i * 6] + xor_result[i * 6 + 5])][
+                    self.des_helper.bin_to_dec(xor_result[i * 6 + 1:i * 6 + 5])]
+                )
+                for i in range(8)
+            )
 
             # Straight Permutation: Rearranging the bits
             sbox_result = self.des_helper.permute(sbox_result, self.straight_permutation_table)
 
             # XOR left and sbox_result
-            xor_left_result = self.des_helper.xor(left, sbox_result)
-            left = xor_left_result
+            left = self.des_helper.xor(left, sbox_result)
 
             # Swapper
             if round_num != 15:
@@ -118,7 +117,7 @@ class DesCipher:
         plaintext = self._process_block(initial_permutation_result, round_keys_binary_reverse)
 
         return plaintext
-    
+
     def cipher_content(self, content: str) -> str:
         """
         Encrypts the given plaintext using DES algorithm.
@@ -131,9 +130,7 @@ class DesCipher:
         hex_blocks = self.des_helper.hex_to_64_bits_blocks(hex_string)
 
         # Call cipher_block to perform encryption
-        ciphertext = ""
-        for hex_string in hex_blocks:
-            ciphertext += self.cipher_block(hex_string)
+        ciphertext = "".join(self.cipher_block(hex_string) for hex_string in hex_blocks)
         return ciphertext
 
     def decipher_content(self, ciphered_content: str) -> str:
@@ -147,12 +144,10 @@ class DesCipher:
         hex_blocks = self.des_helper.hex_to_64_bits_blocks(ciphered_content)
 
         # Call decipher_block to perform decryption
-        hex_text = ""
-        for hex_string in hex_blocks:
-            hex_text += self.decipher_block(hex_string)
+        hex_text = "".join(self.decipher_block(hex_string) for hex_string in hex_blocks)
 
         # Convert hexadecimal code to text
-        deciphered_text = self.des_helper.hex_to_text(hex_string=hex_text)
+        deciphered_text = self.des_helper.hex_to_text(hex_text)
         return deciphered_text
 
     def cipher_hex_img(self, content: str) -> str:
@@ -166,9 +161,7 @@ class DesCipher:
         hex_blocks = self.des_helper.hex_to_64_bits_blocks(content)
 
         # Call cipher_block to perform encryption
-        ciphertext = ""
-        for hex_string in hex_blocks:
-            ciphertext += self.cipher_block(hex_string)
+        ciphertext = "".join(self.cipher_block(hex_string) for hex_string in hex_blocks)
 
         return ciphertext
 
@@ -177,15 +170,12 @@ class DesCipher:
         Decrypts the given ciphertext using DES algorithm.
 
         :param ciphered_content: The input ciphertext as a hexadecimal string
-        :return: The decrypted text as an hexadecimal image
+        :return: The decrypted text as a hexadecimal image
         """
         # Get hex blocks of 64 bits
         hex_blocks = self.des_helper.hex_to_64_bits_blocks(ciphered_content)
 
         # Call decipher_block to perform decryption
-        hex_text = ""
-        for hex_string in hex_blocks:
-            hex_text += self.decipher_block(hex_string)
+        hex_text = "".join(self.decipher_block(hex_string) for hex_string in hex_blocks)
 
         return hex_text
-    

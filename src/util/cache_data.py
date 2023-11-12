@@ -1,7 +1,6 @@
 import os
 import pickle
 import threading
-
 from typing import Callable
 
 from src.util.logger import setup_logging
@@ -9,11 +8,9 @@ from src.util.logger import setup_logging
 # Set up the logging configuration
 logger = setup_logging()
 
-
 # Constant to specify the folder to store cached files
 CACHE_FOLDER = "cache_data"
 CACHE_LOCK = threading.Lock()
-
 
 def cache_data(func: Callable, file_name: str, cache: bool, *args, **kwargs):
     """
@@ -44,13 +41,12 @@ def cache_data(func: Callable, file_name: str, cache: bool, *args, **kwargs):
         cache_file_path = os.path.join(CACHE_FOLDER, f"{file_name}.pickle")
 
         # Check if the file already exists
-        file_exist = os.path.isfile(cache_file_path)
-        if file_exist:
+        file_exists = os.path.isfile(cache_file_path)
+        if file_exists:
             # If the file exists, load the data from it using pickle
             with open(cache_file_path, "rb") as cache_file:
                 logger.info(f"Load cache from {cache_file_path}!")
                 computed_data = pickle.load(cache_file)
-
         else:
             # Call the function to compute the data
             computed_data = func(*args, **kwargs)
@@ -59,7 +55,6 @@ def cache_data(func: Callable, file_name: str, cache: bool, *args, **kwargs):
             with open(cache_file_path, "wb") as cache_file:
                 logger.info(f"Write cache to {cache_file_path}")
                 pickle.dump(computed_data, cache_file)
-
     else:
         # Call the function to compute the data
         computed_data = func(*args, **kwargs)

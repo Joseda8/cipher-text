@@ -1,6 +1,5 @@
 import json
 import os
-from typing import Union
 
 import pandas as pd
 from PIL import Image
@@ -13,7 +12,7 @@ class TextUtil:
 
     def _create_directory_if_not_exists(self, filename: str) -> None:
         """
-        Private function to create the directory for the given filename if it doesn"t exist.
+        Private function to create the directory for the given filename if it doesn't exist.
 
         :param filename: the name of the file as a string
         :return: None
@@ -21,11 +20,11 @@ class TextUtil:
         # Extract the directory path from the filename
         directory = os.path.dirname(filename)
 
-        # Create the directory if it doesn"t exist
+        # Create the directory if it doesn't exist
         if directory and not os.path.exists(directory):
             os.makedirs(directory)
 
-    def image_to_hex_bitmap_and_dimensions(self, image_path: str) -> tuple:
+    def extract_image_hex_bitmap_and_dimensions(self, image_path: str) -> tuple:
         """
         Extract the bitmap from an image and return the dimensions.
 
@@ -48,13 +47,13 @@ class TextUtil:
 
         return bitmap_hex, image_dimensions
     
-    def write_image_from_hex(self, filename: str, hex_bitmap: str, image_size: tuple) -> None:
+    def write_image_from_hex(self, filename: str, image_size: tuple, hex_bitmap: str) -> None:
         """
         Writes an image to the specified file using the provided hexadecimal bitmap.
 
         :param filename: The name of the file to be written as a string.
-        :param hex_bitmap: The hexadecimal string representing the image bitmap.
         :param image_size: The size of the output image (width, height).
+        :param hex_bitmap: The hexadecimal string representing the image bitmap.
         :return: None
         """
         self._create_directory_if_not_exists(filename)
@@ -90,15 +89,16 @@ class TextUtil:
         # Save the DataFrame to CSV
         dataframe.to_csv(filename, index=False)
 
-    def read_csv_to_dataframe(self, filename: str) -> Union[pd.DataFrame, None]:
+    def read_csv_to_dataframe(self, filename: str) -> pd.DataFrame:
         """
         Reads the data from the specified CSV file into a Pandas DataFrame.
 
         :param filename: the name of the CSV file to be read as a string
-        :return: the Pandas DataFrame containing the data, or None if the file does not exist
+        :return: the Pandas DataFrame containing the data
+        :raise FileNotFoundError: if the file does not exist
         """
         if not os.path.exists(filename):
-            return None
+            raise FileNotFoundError(f"File not found: {filename}")
 
         # Read the CSV file into a DataFrame
         dataframe = pd.read_csv(filename)

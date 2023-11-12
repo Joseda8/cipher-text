@@ -1,6 +1,5 @@
 import random
 import string
-
 from tr import tr
 
 
@@ -19,10 +18,9 @@ class MonoalphabeticCipher:
 
     def _generate_seed(self) -> str:
         """
-        Generates a seed for the cipher
-        using all the ASCII printable characters.
+        Generates a seed for the cipher using all the ASCII printable characters.
 
-        :return: a string with the seed for the cipher
+        :return: A string with the seed for the cipher.
         """
         # Create a string of numbers and letters (both lowercase and uppercase)
         chars = string.ascii_letters + string.digits
@@ -32,20 +30,19 @@ class MonoalphabeticCipher:
         """
         Generates a random key for the cipher.
 
-        :return: a random key as a string
+        :return: A random key as a string.
         """
         # Shuffle seed to create a random key
         seed = list(self._seed)
         random.shuffle(seed)
-        seed = "".join(seed)
-        return seed
+        return "".join(seed)
 
     def cipher_content(self, content: str) -> str:
         """
         Ciphers the given content using the random key.
 
-        :param content: the content to be ciphered as a string
-        :return: the ciphered content as a string
+        :param content: The content to be ciphered as a string.
+        :return: The ciphered content as a string.
         """
         # Cipher the content using the random key
         ciphered_content = tr(self._seed, self._key, content)
@@ -55,8 +52,8 @@ class MonoalphabeticCipher:
         """
         Deciphers the given ciphered content using the random key.
 
-        :param ciphered_content: the ciphered content to be deciphered as a string
-        :return: the deciphered content as a string
+        :param ciphered_content: The ciphered content to be deciphered as a string.
+        :return: The deciphered content as a string.
         """
         # Decipher the ciphered content using the random key
         deciphered_content = tr(self._key, self._seed, ciphered_content)

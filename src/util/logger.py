@@ -7,10 +7,10 @@ class ColoredFormatter(logging.Formatter):
     """
 
     COLOR_CODES = {
-        'DEBUG': '\033[94m',  # Blue
-        'INFO': '\033[92m',   # Green
+        'DEBUG': '\033[94m',   # Blue
+        'INFO': '\033[92m',    # Green
         'WARNING': '\033[93m',  # Yellow
-        'ERROR': '\033[91m',  # Red
+        'ERROR': '\033[91m',    # Red
         'CRITICAL': '\033[1;41m',  # White on red background
     }
 
@@ -24,7 +24,7 @@ class ColoredFormatter(logging.Formatter):
         :rtype: str
         """
         log_message = super().format(record)
-        return f"{self.COLOR_CODES[record.levelname]}{log_message}\033[0m"
+        return f"{self.COLOR_CODES.get(record.levelname, '')}{log_message}\033[0m"
 
 
 def setup_logging(level="INFO"):
@@ -47,9 +47,9 @@ def setup_logging(level="INFO"):
     }
 
     # Default to INFO level if the provided level is not valid
-    level_to_set = level_map.get(level, "INFO")
+    level_to_set = level_map.get(level, logging.INFO)
 
-    # Init logger
+    # Initialize logger
     logger = logging.getLogger()
     logger.setLevel(level_to_set)
 
@@ -66,6 +66,6 @@ def setup_logging(level="INFO"):
     # Log incorrect level parameter
     if level not in level_map:
         logger.warning(
-            f"Invalid logging level '{level}' provided. Defaulting to 'INFO'.")
+            f"Invalid logging level '{level}'. Defaulting to 'INFO'.")
 
     return logger

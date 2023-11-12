@@ -4,24 +4,24 @@ from enum import Enum
 
 import nltk
 from nltk.corpus import gutenberg
-
+from nltk.util import ngrams
 
 class Language(Enum):
     eng = 1
     spa = 2
 
-def language_type(value):
+def language_type(language_str):
     """
     Converts a string into a Language enum member.
 
-    :param value: The string representation of the Language enum.
+    :param language_str: The string representation of the Language enum.
     :return: The corresponding Language enum member.
     :raises: KeyError if an invalid Language value is provided.
     """
     try:
-        return Language[value]
+        return Language[language_str]
     except KeyError:
-        raise ValueError(f"Invalid Language value: {value}")
+        raise ValueError(f"Invalid Language value: {language_str}")
 
 def download_resource(resource):
     """
@@ -30,7 +30,7 @@ def download_resource(resource):
     :param resource: The name of the NLTK resource.
     """
     try:
-        nltk.data.find(resource_name=resource, paths='~/nltk_data')
+        nltk.data.find(resource_name=resource, paths="~/nltk_data")
     except LookupError:
         nltk.download(resource)
 
@@ -38,7 +38,7 @@ def download_required_resources():
     """
     Downloads the required NLTK resources for the script.
     """
-    download_resource('gutenberg')
+    download_resource("gutenberg")
 
 def calculate_ngram_freq(text, ngram_type):
     """
@@ -67,9 +67,10 @@ def ngrams(n, text):
     :param text: The input text.
     :yield: The generated n-grams.
     """
-    for i in range(len(text) - n + 1):
-        if not re.search(r'\s', text[i:i+n]):
-            yield text[i:i+n]
+    for start_index in range(len(text) - n + 1):
+        end_index = start_index + n
+        if not re.search(r"\s", text[start_index:end_index]):
+            yield text[start_index:end_index]
 
 def get_long_text(language):
     """
@@ -80,9 +81,9 @@ def get_long_text(language):
     :raises: ValueError if an invalid language is specified.
     """
     if language == Language.eng:
-        long_text = gutenberg.raw('bryant-stories.txt') + gutenberg.raw('austen-persuasion.txt') + gutenberg.raw('melville-moby_dick.txt')
+        long_text = gutenberg.raw("bryant-stories.txt") + gutenberg.raw("austen-persuasion.txt") + gutenberg.raw("melville-moby_dick.txt")
     elif language == Language.spa:
-        long_text = gutenberg.raw('don_quijote.txt') + gutenberg.raw('cosas_nuevas.txt')
+        long_text = gutenberg.raw("don_quijote.txt") + gutenberg.raw("cosas_nuevas.txt")
     else:
         raise ValueError("Invalid language specified")
     return long_text

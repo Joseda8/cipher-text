@@ -40,7 +40,7 @@ class DesCipherHelper:
         byte_data = bytes.fromhex(hex_string)
 
         # Decode bytes to text using UTF-8 encoding and strip null characters
-        text_representation = byte_data.decode("utf-8").rstrip('\x00')
+        text_representation = byte_data.decode("utf-8").rstrip("\x00")
 
         return text_representation
     
@@ -61,7 +61,7 @@ class DesCipherHelper:
         # If there are remaining characters, add them to the last item and pad with zeros
         remaining_chars = hex_string[num_full_blocks * 16:]
         if remaining_chars:
-            last_item = remaining_chars.ljust(16, '0')
+            last_item = remaining_chars.ljust(16, "0")
             full_blocks.append(last_item)
 
         return full_blocks
