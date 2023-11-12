@@ -1,6 +1,8 @@
 import random
 import string
 
+from typing import List
+
 from src.ciphers.des import const
 
 
@@ -9,6 +11,62 @@ class DesCipherHelper:
     Helper class for DES (Data Encryption Standard) cipher operations.
     """
 
+    @staticmethod
+    def text_to_hex(text: str) -> str:
+        """
+        Convert text to hexadecimal representation.
+
+        :param text: The input text to be converted.
+        :return: The hexadecimal representation of the input text.
+        """
+        # Encode text to bytes using UTF-8 encoding
+        encoded_text = text.encode("utf-8")
+
+        # Convert bytes to hexadecimal representation
+        hex_representation = "".join(["{:02x}".format(byte) for byte in encoded_text])
+        hex_representation = hex_representation.upper()
+
+        return hex_representation
+    
+    @staticmethod
+    def hex_to_text(hex_string: str) -> str:
+        """
+        Convert hexadecimal representation to text.
+
+        :param hex_string: The input hexadecimal string.
+        :return: The text representation of the input hexadecimal string.
+        """
+        # Convert hexadecimal string to bytes
+        byte_data = bytes.fromhex(hex_string)
+
+        # Decode bytes to text using UTF-8 encoding and strip null characters
+        text_representation = byte_data.decode("utf-8").rstrip('\x00')
+
+        return text_representation
+    
+    @staticmethod
+    def hex_to_64_bits_blocks(hex_string: str) -> List[str]:
+        """
+        Divide a hexadecimal string into items of 64 bits.
+
+        :param hex_string: The input hexadecimal string.
+        :return: A list of 64-bit items.
+        """
+        # Calculate the number of full 16-character blocks
+        num_full_blocks = len(hex_string) // 16
+
+        # Divide the hex string into full 16-character blocks
+        full_blocks = [hex_string[start:start + 16] for start in range(0, num_full_blocks * 16, 16)]
+
+        # If there are remaining characters, add them to the last item and pad with zeros
+        remaining_chars = hex_string[num_full_blocks * 16:]
+        if remaining_chars:
+            last_item = remaining_chars.ljust(16, '0')
+            full_blocks.append(last_item)
+
+        return full_blocks
+
+    
     @staticmethod
     def hex_to_bin(hex_string: str) -> str:
         """
@@ -127,8 +185,7 @@ class DesCipherHelper:
         key_parity_permutation = const.key_permutation_table
 
         # Get 56-bit key from 64-bit using the parity bits
-        key_binary = DesCipherHelper.permute(
-            key_binary, key_parity_permutation)
+        key_binary = DesCipherHelper.permute(key_binary, key_parity_permutation)
 
         # Number of bit shifts
         shift_table = const.key_shift_table
@@ -145,17 +202,14 @@ class DesCipherHelper:
 
         for round_num in range(16):
             # Shifting the bits by nth shifts by checking from the shift table
-            left_part = DesCipherHelper.shift_left(
-                left_part, shift_table[round_num])
-            right_part = DesCipherHelper.shift_left(
-                right_part, shift_table[round_num])
+            left_part = DesCipherHelper.shift_left(left_part, shift_table[round_num])
+            right_part = DesCipherHelper.shift_left(right_part, shift_table[round_num])
 
             # Combination of left and right string
             combined_str = left_part + right_part
 
             # Compression of key from 56 to 48 bits
-            round_key_binary = DesCipherHelper.permute(
-                combined_str, key_comp_permutation)
+            round_key_binary = DesCipherHelper.permute(combined_str, key_comp_permutation)
 
             round_keys_binary.append(round_key_binary)
             round_keys_hex.append(DesCipherHelper.bin_to_hex(round_key_binary))

@@ -1,6 +1,6 @@
 import argparse
 
-from src.ciphers import MonoalphabeticCipher, PolyalphabeticCipher
+from src.ciphers import DesCipher, MonoalphabeticCipher, PolyalphabeticCipher
 from src.util.logger import setup_logging
 from src.util.nltk_util import Language, language_type
 from src.util.text_util import TextUtil
@@ -45,7 +45,7 @@ logger.debug("Running Monoalphabetic cipher - Deciphering")
 deciphered_content_mono = monoalphabetic_cipher.decipher_content(ciphered_content=ciphered_content_mono)
 util_text.write_text_to_file(filename=f"results/{language}/mono_deciphered.txt", content=deciphered_content_mono)
 
-# Instance of the MonoalphabeticCipher class
+# Instance of the PolyalphabeticCipher class
 logger.info("Running PolyalphabeticCipher cipher")
 polyalphabetic_cipher = PolyalphabeticCipher()
 
@@ -57,3 +57,17 @@ util_text.write_text_to_file(filename=f"results/{language}/poly_ciphered.txt", c
 logger.debug("Running PolyalphabeticCipher cipher - Deciphering")
 deciphered_content_poly = polyalphabetic_cipher.decipher_content(ciphered_content=ciphered_content_poly)
 util_text.write_text_to_file(filename=f"results/{language}/poly_deciphered.txt", content=deciphered_content_poly)
+
+
+# Instance of the DesCipher class
+logger.info("Running DesCipher cipher")
+des_cipher = DesCipher()
+
+# Cipher, decipher and hack the text
+logger.debug("Running DesCipher cipher - Ciphering")
+ciphered_content_des = des_cipher.cipher_content(content=sample_text)
+util_text.write_text_to_file(filename=f"results/{language}/des_ciphered.txt", content=ciphered_content_des)
+
+logger.debug("Running DesCipher cipher - Deciphering")
+deciphered_content_des = des_cipher.decipher_content(ciphered_content=ciphered_content_des)
+util_text.write_text_to_file(filename=f"results/{language}/des_deciphered.txt", content=deciphered_content_des)

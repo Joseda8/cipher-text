@@ -1,3 +1,5 @@
+from typing import List
+
 from src.ciphers.des import const
 from src.ciphers.des.des_cipher_helper import DesCipherHelper
 
@@ -35,13 +37,12 @@ class DesCipher:
         self._key = self.des_helper._generate_random_key(self._seed)
         self._round_keys_binary, self._round_keys_hex = self.des_helper.generate_keys(self._key)
 
-    def _process_block(self, block, round_keys_binary, round_keys_hex):
+    def _process_block(self, block: str, round_keys_binary: List[str]) -> str:
         """
         Processes a block using the DES algorithm for encryption.
 
         :param block: The input block to be processed (64 bits)
         :param round_keys_binary: List of round keys in binary format
-        :param round_keys_hex: List of round keys in hexadecimal format
         :return: The encrypted block as a hexadecimal string
         """
         # Split the block into left and right halves
@@ -74,18 +75,15 @@ class DesCipher:
             if round_num != 15:
                 left, right = right, left
 
-            print("Round", round_num + 1, ":", self.des_helper.bin_to_hex(left), self.des_helper.bin_to_hex(right),
-                  round_keys_hex[round_num])
-
         # Combination
         combined_result = left + right
 
-        # Final Permutation: Rearranging bits to get ciphertext
-        ciphertext = self.des_helper.permute(combined_result, self.final_permutation_table)
-        ciphertext = self.des_helper.bin_to_hex(ciphertext)
-        return ciphertext
+        # Final Permutation: Rearranging bits to get text
+        text = self.des_helper.permute(combined_result, self.final_permutation_table)
+        text = self.des_helper.bin_to_hex(text)
+        return text
 
-    def cipher(self, plaintext_hex: str) -> str:
+    def cipher_block(self, plaintext_hex: str) -> str:
         """
         Encrypts the given plaintext using DES algorithm.
 
@@ -93,19 +91,17 @@ class DesCipher:
         :return: The encrypted ciphertext as a binary string
         """
         round_keys_binary = self._round_keys_binary
-        round_keys_hex = self._round_keys_hex
         plaintext_binary = self.des_helper.hex_to_bin(plaintext_hex)
 
         # Initial Permutation
         initial_permutation_result = self.des_helper.permute(plaintext_binary, self.initial_permutation_table)
-        print("After initial permutation:", self.des_helper.bin_to_hex(initial_permutation_result))
 
         # Process block using common logic
-        ciphertext = self._process_block(initial_permutation_result, round_keys_binary, round_keys_hex)
+        ciphertext = self._process_block(initial_permutation_result, round_keys_binary)
 
         return ciphertext
 
-    def decipher(self, cipher_text: str) -> str:
+    def decipher_block(self, cipher_text: str) -> str:
         """
         Decrypts the given ciphertext using DES algorithm.
 
@@ -113,27 +109,50 @@ class DesCipher:
         :return: The decrypted plaintext as a binary string
         """
         round_keys_binary_reverse = self._round_keys_binary[::-1]
-        round_keys_hex_reverse = self._round_keys_hex[::-1]
         ciphertext_binary = self.des_helper.hex_to_bin(cipher_text)
 
         # Initial Permutation
         initial_permutation_result = self.des_helper.permute(ciphertext_binary, self.initial_permutation_table)
-        print("After initial permutation:", self.des_helper.bin_to_hex(initial_permutation_result))
 
         # Process block using common logic
-        plaintext = self._process_block(initial_permutation_result, round_keys_binary_reverse, round_keys_hex_reverse)
+        plaintext = self._process_block(initial_permutation_result, round_keys_binary_reverse)
 
         return plaintext
+    
+    def cipher_content(self, content: str) -> str:
+        """
+        Encrypts the given plaintext using DES algorithm.
 
+        :param plaintext: The input plaintext as a regular string
+        :return: The encrypted ciphertext as a binary string
+        """
+        # Convert the input string to hexadecimal
+        hex_string = self.des_helper.text_to_hex(content)
+        hex_blocks = self.des_helper.hex_to_64_bits_blocks(hex_string)
 
-# Main -------
-des = DesCipher()
-pt = "123456ABCD132536"
+        # Call cipher_block to perform encryption
+        ciphertext = ""
+        for hex_string in hex_blocks:
+            ciphertext += self.cipher_block(hex_string)
 
-print("Encryption")
-cipher_text = des.cipher(pt)
-print("Cipher Text: ", cipher_text)
+        return ciphertext
 
-print("Decryption")
-text = des.decipher(cipher_text)
-print("Plain Text: ", text)
+    def decipher_content(self, ciphered_content: str) -> str:
+        """
+        Decrypts the given ciphertext using DES algorithm.
+
+        :param cipher_text: The input ciphertext as a hexadecimal string
+        :return: The decrypted plaintext as a regular string
+        """
+
+        # Get hex blocks of 64 bits
+        hex_blocks = self.des_helper.hex_to_64_bits_blocks(ciphered_content)
+
+        # Call decipher_block to perform decryption
+        hex_text = ""
+        for hex_string in hex_blocks:
+            hex_text += self.decipher_block(hex_string)
+
+        # Convert hexadecimal code to text
+        deciphered_text = self.des_helper.hex_to_text(hex_string=hex_text)
+        return deciphered_text
