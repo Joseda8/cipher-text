@@ -10,7 +10,7 @@ class DesCipherHelper:
     """
     Helper class for DES (Data Encryption Standard) cipher operations.
     """
-
+    
     @staticmethod
     def text_to_hex(text: str) -> str:
         """

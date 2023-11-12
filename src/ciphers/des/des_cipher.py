@@ -134,7 +134,6 @@ class DesCipher:
         ciphertext = ""
         for hex_string in hex_blocks:
             ciphertext += self.cipher_block(hex_string)
-
         return ciphertext
 
     def decipher_content(self, ciphered_content: str) -> str:
@@ -144,7 +143,6 @@ class DesCipher:
         :param cipher_text: The input ciphertext as a hexadecimal string
         :return: The decrypted plaintext as a regular string
         """
-
         # Get hex blocks of 64 bits
         hex_blocks = self.des_helper.hex_to_64_bits_blocks(ciphered_content)
 
@@ -156,3 +154,38 @@ class DesCipher:
         # Convert hexadecimal code to text
         deciphered_text = self.des_helper.hex_to_text(hex_string=hex_text)
         return deciphered_text
+
+    def cipher_hex_img(self, content: str) -> str:
+        """
+        Encrypts the given hex image using DES algorithm.
+
+        :param plaintext: The image as a hexadecimal string
+        :return: The encrypted ciphertext as a binary string
+        """
+        # Convert the input string to hexadecimal
+        hex_blocks = self.des_helper.hex_to_64_bits_blocks(content)
+
+        # Call cipher_block to perform encryption
+        ciphertext = ""
+        for hex_string in hex_blocks:
+            ciphertext += self.cipher_block(hex_string)
+
+        return ciphertext
+
+    def decipher_hex_img(self, ciphered_content: str) -> str:
+        """
+        Decrypts the given ciphertext using DES algorithm.
+
+        :param ciphered_content: The input ciphertext as a hexadecimal string
+        :return: The decrypted text as an hexadecimal image
+        """
+        # Get hex blocks of 64 bits
+        hex_blocks = self.des_helper.hex_to_64_bits_blocks(ciphered_content)
+
+        # Call decipher_block to perform decryption
+        hex_text = ""
+        for hex_string in hex_blocks:
+            hex_text += self.decipher_block(hex_string)
+
+        return hex_text
+    

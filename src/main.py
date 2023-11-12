@@ -32,11 +32,12 @@ util_text = TextUtil()
 logger.info(f"Reading text from: {filename}")
 sample_text = util_text.read_file(filename=filename)
 
+
 # Instance of the MonoalphabeticCipher class
 logger.info("Running Monoalphabetic cipher")
 monoalphabetic_cipher = MonoalphabeticCipher()
 
-# Cipher, decipher and hack the text
+# Cipher and decipher the text
 logger.debug("Running Monoalphabetic cipher - Ciphering")
 ciphered_content_mono = monoalphabetic_cipher.cipher_content(content=sample_text)
 util_text.write_text_to_file(filename=f"results/{language}/mono_ciphered.txt", content=ciphered_content_mono)
@@ -45,11 +46,12 @@ logger.debug("Running Monoalphabetic cipher - Deciphering")
 deciphered_content_mono = monoalphabetic_cipher.decipher_content(ciphered_content=ciphered_content_mono)
 util_text.write_text_to_file(filename=f"results/{language}/mono_deciphered.txt", content=deciphered_content_mono)
 
+
 # Instance of the PolyalphabeticCipher class
 logger.info("Running PolyalphabeticCipher cipher")
 polyalphabetic_cipher = PolyalphabeticCipher()
 
-# Cipher, decipher and hack the text
+# Cipher and decipher the text
 logger.debug("Running PolyalphabeticCipher cipher - Ciphering")
 ciphered_content_poly = polyalphabetic_cipher.cipher_content(content=sample_text)
 util_text.write_text_to_file(filename=f"results/{language}/poly_ciphered.txt", content=ciphered_content_poly)
@@ -63,7 +65,7 @@ util_text.write_text_to_file(filename=f"results/{language}/poly_deciphered.txt",
 logger.info("Running DesCipher cipher")
 des_cipher = DesCipher()
 
-# Cipher, decipher and hack the text
+# Cipher and decipher the text
 logger.debug("Running DesCipher cipher - Ciphering")
 ciphered_content_des = des_cipher.cipher_content(content=sample_text)
 util_text.write_text_to_file(filename=f"results/{language}/des_ciphered.txt", content=ciphered_content_des)
@@ -71,3 +73,11 @@ util_text.write_text_to_file(filename=f"results/{language}/des_ciphered.txt", co
 logger.debug("Running DesCipher cipher - Deciphering")
 deciphered_content_des = des_cipher.decipher_content(ciphered_content=ciphered_content_des)
 util_text.write_text_to_file(filename=f"results/{language}/des_deciphered.txt", content=deciphered_content_des)
+
+# Cipher and decipher the image
+logger.debug("Running DesCipher image cipher - Deciphering")
+image_bit_map, image_dimensions = util_text.image_to_hex_bitmap_and_dimensions(image_path="test_files/test_img.jpg")
+ciphered_img_des = des_cipher.cipher_hex_img(content=image_bit_map)
+util_text.write_image_from_hex(filename="results/images/des_ciphered.jpg", hex_bitmap=ciphered_img_des, image_size=image_dimensions)
+deciphered_img_des = des_cipher.decipher_hex_img(ciphered_content=ciphered_img_des)
+util_text.write_image_from_hex(filename="results/images/des_deciphered.jpg", hex_bitmap=deciphered_img_des, image_size=image_dimensions)
