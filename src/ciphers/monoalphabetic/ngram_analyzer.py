@@ -1,16 +1,16 @@
 from src.util.cache_data import cache_data
 from src.util.nltk_util import download_required_resources, calculate_ngram_freq, get_long_text, Language
+from typing import Optional, Union, Dict
 
 # Download NLTK required resources
 download_required_resources()
-
 
 class NgramAnalyzer:
     """
     This class represents an Ngram Analyzer that generates unigrams, bigrams, and trigrams frequency distributions.
     """
 
-    def __init__(self, text_name, language=Language.eng, text=None, cache=True):
+    def __init__(self, text_name: str, language: Language = Language.eng, text: Optional[str] = None, cache: bool = True) -> None:
         """
         Initializes the NgramAnalyzer instance.
 
