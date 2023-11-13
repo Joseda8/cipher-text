@@ -47,3 +47,10 @@ Here's an example of how to run the script:
 ```sh
 python3 -m src.ciphers.monoalphabetic.monoalphabetic_cipher_breaker --filename results/eng/mono_ciphered.txt --language eng
 ```
+
+## Graphing
+The `GraphUtil` class can be utilized to create bar graphs from the n-grams CSV files gotten from execution the Monoalphabetic cipher breaker.
+
+```sh
+python3 -m src.util.graph_util --folder_path path/to/csv_folder
+```
