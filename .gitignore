@@ -16,8 +16,9 @@ __pycache__/
 # Ignore JSON files
 *.json
 
-# Ignore JPG images
+# Ignore images
 *.jpg
+*.png
 
 # Don't ignore these specific files
 !muestra.txt
