@@ -62,10 +62,10 @@ class MonoalphabeticCipherBreaker:
         # Store the n-grams DataFrames to CSV files
         path_root = f"results/{self._language_name}/ngrams"
         self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_ciphered_unigrams.csv", dataframe=self._df_ciphered_unigrams)
-        self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_ciphered_biigrams.csv", dataframe=self._df_ciphered_bigrams)
+        self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_ciphered_bigrams.csv", dataframe=self._df_ciphered_bigrams)
         self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_ciphered_trigrams.csv", dataframe=self._df_ciphered_trigrams)
         self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_language_unigrams.csv", dataframe=self._df_language_unigrams)
-        self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_language_biigrams.csv", dataframe=self._df_language_bigrams)
+        self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_language_bigrams.csv", dataframe=self._df_language_bigrams)
         self._util_text.write_dataframe_to_csv(filename=f"{path_root}/df_language_trigrams.csv", dataframe=self._df_language_trigrams)
 
     def _get_most_frequent_chars(self, df_ngrams, num_top) -> dict:
