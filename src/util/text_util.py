@@ -26,7 +26,7 @@ class TextUtil:
 
     def extract_image_hex_bitmap_and_dimensions(self, image_path: str) -> tuple:
         """
-        Extract the bitmap from an image and return the dimensions.
+        Extract the hex-bitmap from an image and return the dimensions.
 
         :param image_path: The path to the image file.
         :return: A tuple containing a binary string representing the image bitmap and the image dimensions (width, height).
