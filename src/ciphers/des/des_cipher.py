@@ -3,7 +3,6 @@ from typing import List
 from src.ciphers.des import const
 from src.ciphers.des.des_cipher_helper import DesCipherHelper
 
-
 class DesCipher:
     """
     This class represents the Data Encryption Standard (DES) algorithm.
@@ -53,7 +52,7 @@ class DesCipher:
             # Expansion D-box: Expanding the 32 bits data into 48 bits
             right_expanded = self.des_helper.permute(right, self.expansion_d_box_table)
 
-            # XOR RoundKey[i] and right_expanded
+            # XOR and expansion
             xor_result = self.des_helper.xor(right_expanded, round_keys_binary[round_num])
 
             # S-boxes: Substituting the value from s-box table
@@ -122,7 +121,7 @@ class DesCipher:
         """
         Encrypts the given plaintext using DES algorithm.
 
-        :param plaintext: The input plaintext as a regular string
+        :param content: The input plaintext as a regular string
         :return: The encrypted ciphertext as a binary string
         """
         # Convert the input string to hexadecimal
@@ -137,7 +136,7 @@ class DesCipher:
         """
         Decrypts the given ciphertext using DES algorithm.
 
-        :param cipher_text: The input ciphertext as a hexadecimal string
+        :param ciphered_content: The input ciphertext as a hexadecimal string
         :return: The decrypted plaintext as a regular string
         """
         # Get hex blocks of 64 bits
@@ -154,7 +153,7 @@ class DesCipher:
         """
         Encrypts the given hex image using DES algorithm.
 
-        :param plaintext: The image as a hexadecimal string
+        :param content: The image as a hexadecimal string
         :return: The encrypted ciphertext as a binary string
         """
         # Convert the input string to hexadecimal
