@@ -35,7 +35,7 @@ class DesCipher:
         # Generate keys
         self._seed = self.des_helper._generate_seed()
         self._key = self.des_helper._generate_random_key(self._seed)
-        self._round_keys_binary, self._round_keys_hex = self.des_helper.generate_keys(self._key)
+        self._round_keys_binary = self.des_helper.generate_keys(self._key)
 
     def _process_block(self, block: str, round_keys_binary: List[str]) -> str:
         """

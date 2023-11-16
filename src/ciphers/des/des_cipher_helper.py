@@ -171,12 +171,12 @@ class DesCipherHelper:
         return key
 
     @staticmethod
-    def generate_keys(key_hex: str) -> tuple:
+    def generate_keys(key_hex: str) -> list:
         """
         Generates round keys for the DES algorithm.
 
         :param key_hex: The input key as a hexadecimal string
-        :return: Tuple containing lists of round keys in binary and hexadecimal
+        :return: List of round keys in binary format
         """
         # Convert the hexadecimal key to binary
         key_binary = DesCipherHelper.hex_to_bin(key_hex)
@@ -198,7 +198,6 @@ class DesCipherHelper:
         right_part = key_binary[28:56]  # rk for RoundKeys in hexadecimal
 
         round_keys_binary = []
-        round_keys_hex = []
 
         for round_num in range(16):
             # Shifting the bits by nth shifts by checking from the shift table
@@ -212,6 +211,6 @@ class DesCipherHelper:
             round_key_binary = DesCipherHelper.permute(combined_str, key_comp_permutation)
 
             round_keys_binary.append(round_key_binary)
-            round_keys_hex.append(DesCipherHelper.bin_to_hex(round_key_binary))
 
-        return round_keys_binary, round_keys_hex
+        return round_keys_binary
+
